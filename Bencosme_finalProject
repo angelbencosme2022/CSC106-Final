@@ -1,0 +1,79 @@
+var level1 = function(){
+    var platformY = 379;
+    background(167, 218, 232);
+    var safe = color(51,166,166);
+    background(167, 218, 232);
+var dead = color(255,0,0);
+fill(51, 166, 166);
+rect(0,379,400,20);
+fill(dead);
+rect(269,350,22,29);//platform
+};
+
+
+var safe = color(51,166,166);
+var dead = color(255,0,0);
+fill(51, 166, 166);
+rect(0,379,400,20);
+fill(dead);
+rect(269,350,22,29);//platform
+
+
+/*check color function
+make color of floor/platform a variable
+and if that variable is the safe color then it lives
+*/
+
+/*check color function
+touch platform function if that doens't work than
+it would have to be hard coded each
+*/
+
+var Beaver = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.img = getImage("creatures/Hopper-Happy");
+    this.sticks = 0;
+};
+
+Beaver.prototype.draw = function() {
+    this.y = constrain(this.y, 0, height-50);
+    this.x = constrain(this.x, 0, height-41);
+    image(this.img, this.x, this.y, 40, 40);
+};
+
+Beaver.prototype.left = function() {
+    this.img = getImage("creatures/Hopper-Jumping");
+    this.x -= +5;
+};
+Beaver.prototype.right = function() {
+    this.img = getImage("creatures/Hopper-Jumping");
+    this.x -= -5;
+};
+Beaver.prototype.hop = function() {
+    this.img = getImage("creatures/Hopper-Jumping");
+    this.y -= 5;
+};
+
+Beaver.prototype.fall = function() {
+    this.img = getImage("creatures/Hopper-Happy");
+    this.y += 5;
+};
+
+var beaver = new Beaver(200, 250);
+draw = function() {
+    level1();
+    if (keyIsPressed && keyCode === UP) {
+        beaver.hop();
+    } else {
+        beaver.fall(); 
+    }
+    if(keyIsPressed && keyCode === RIGHT){
+        beaver.right();
+    }
+    if(keyIsPressed && keyCode === LEFT){
+        beaver.left();
+    }
+    beaver.draw();
+
+};
