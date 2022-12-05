@@ -1,5 +1,5 @@
+    var platformY = 380;
 var level1 = function(){
-    var platformY = 379;
     background(167, 218, 232);
     var safe = color(51,166,166);
     background(167, 218, 232);
@@ -37,7 +37,7 @@ var Beaver = function(x, y) {
 };
 
 Beaver.prototype.draw = function() {
-    this.y = constrain(this.y, 0, height-50);
+    this.y = constrain(this.y, 0, height-60);
     this.x = constrain(this.x, 0, height-41);
     image(this.img, this.x, this.y, 40, 40);
 };
@@ -75,5 +75,10 @@ draw = function() {
         beaver.left();
     }
     beaver.draw();
-
+    text(beaver.y,15,30);
+   
+   if(beaver.y+80 === platformY){
+       beaver.fall();
+   }
+   
 };
