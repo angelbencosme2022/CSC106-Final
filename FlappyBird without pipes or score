@@ -1,0 +1,238 @@
+var Gameover = false; 
+var drawHead = function(bitmojiX, bitmojiY){
+            noStroke();
+fill(0, 0, 0);
+rect(-19+bitmojiX,36+bitmojiY,54,85,2);
+fill(213,166,124);
+ellipse(10+bitmojiX,7+bitmojiY,83,100); //head
+fill(255, 255, 255);
+arc(-35+bitmojiX,39+bitmojiY,28,55,0,361);
+arc(56+bitmojiX,39+bitmojiY,30,55,0,361);
+fill(0, 0, 0); //black hair
+};
+  
+var drawBody = function(bitmojiX, bitmojiY){
+
+ellipse(6+bitmojiX,-29+bitmojiY,84,40);
+fill(115,23,23);
+ellipse(25+bitmojiX,bitmojiY,8,8);
+ellipse(-4+bitmojiX,bitmojiY,7,8);
+fill(207, 146, 93);
+bezier(8+bitmojiX,7+bitmojiY,21+bitmojiX,23+bitmojiY,20+bitmojiX,4+bitmojiY,15+bitmojiX,bitmojiY);//nose
+fill(255, 255, 255);
+arc(9+bitmojiX,25+bitmojiY,30,13,1,180);
+line(12+bitmojiX,13-bitmojiY,20+bitmojiX,22-bitmojiY);
+ellipse(-27+bitmojiX,5+bitmojiY,7,6); //left earring
+ellipse(46+bitmojiX,6+bitmojiY,8,7); //right earring
+textSize(27);
+
+fill(255, 0, 0);
+text("AV ",14+bitmojiX,84+bitmojiY);
+};
+
+var drawBitmoji = function (bitmojiX,bitmojiY){
+    
+    drawHead(bitmojiX,bitmojiY);
+    drawBody(bitmojiX,bitmojiY);
+};
+
+
+var currentScene = 0;
+
+var Button = function(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.width = config.width || 150;
+    this.height = config.height || 50;
+    this.label = config.label || "Click";
+    this.onClick = config.onClick || function() {};
+};
+
+Button.prototype.draw = function() {
+    fill(0, 234, 255);
+    rect(this.x, this.y, this.width, this.height, 5);
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x+10, this.y+this.height/4);
+};
+
+Button.prototype.isMouseInside = function() {
+    return mouseX > this.x &&
+           mouseX < (this.x + this.width) &&
+           mouseY > this.y &&
+           mouseY < (this.y + this.height);
+};
+
+Button.prototype.handleMouseClick = function() {
+    if (this.isMouseInside()) {
+        this.onClick();
+    }
+};
+
+var startButton = new Button({
+    x: 100,
+    y: 267,
+    label: "Start!",
+    onClick: function() {
+       currentScene = 1;
+    }
+});
+startButton.draw();
+
+
+var btn2 = new Button({
+    x: 100,
+    y: 213,
+    label: "No! Click ME!",
+    onClick: function() {
+        text("Yay, you picked me!", this.x, this.y+this.height);
+    }
+});
+btn2.draw();
+
+
+mouseClicked = function() {
+    startButton.handleMouseClick();
+    btn2.handleMouseClick();
+};
+
+
+var splash = function() {
+   background(229, 235, 185);
+   fill(52, 47, 189);
+   textSize(45);
+   text("Tic Tac Toe", 150,150);
+   textSize(25);
+   text("by Angel Bencosme", 150,190);
+   startButton.draw();
+   
+};
+
+var Beaver = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.img = getImage("creatures/Hopper-Happy");
+    this.sticks = 0;
+};
+
+Beaver.prototype.draw = function() {
+    fill(255, 0, 0);
+    this.y = constrain(this.y, 0, height-50);
+    image(this.img, this.x, this.y, 40, 40);
+};
+
+Beaver.prototype.hop = function() {
+    this.img = getImage("creatures/Hopper-Jumping");
+    this.y -= 5;
+};
+
+Beaver.prototype.fall = function() {
+    this.img = getImage("creatures/Hopper-Happy");
+    this.y += 5;
+};
+
+Beaver.prototype.checkForStickGrab = function(stick) {
+    if ((stick.x >= this.x && stick.x <= (this.x + 5))) {
+        
+        if(stick.isTop && this.y > 0 && this.y < stick.height) {
+                    
+            stick.height = 0;
+            this.sticks++;
+            
+        } else if (!stick.isTop && this.y < 400 && this.y >400-stick.height){
+           stick.height = 0;
+            this.sticks++;
+            
+            
+        }
+
+    }
+    
+    
+};
+var gameButton = new Button({x:222, y:225, label:"Start the Frogger!", onClick:function(){currentScene=2; }, color:color(145, 153, 153)});
+
+
+var Stick = function(x, height, isTop) {
+    this.x = x;
+    this.height = height;
+    this.isTop = isTop;
+};
+
+Stick.prototype.draw = function() {
+    fill(89, 71, 0);
+    rectMode(CENTER);
+    
+    if(this.isTop) {
+        rect(this.x, 0, 5, this.height); 
+    }else {
+        rect(this.x, 400, 5, this.height); 
+    }
+};
+
+var beaver = new Beaver(200, 300);
+
+var sticks = [];
+for (var i = 0; i < 40; i++) {  
+    sticks.push(new Stick(i * 100 + 300, random(20, 260), true));
+    sticks.push(new Stick(i * 100 + 300, random(85, 344), false));
+}
+
+var grassXs = [];
+for (var i = 0; i < 25; i++) { 
+    grassXs.push(i*20);
+}
+
+
+
+draw = function() {
+     if (currentScene === 0)
+    { splash(); }
+    else{ 
+    // static
+    background(227, 254, 255);
+    fill(130, 79, 43);
+    rectMode(CORNER);
+    rect(0, height*0.90, width, height*0.10);
+    
+    for (var i = 0; i < grassXs.length; i++) {
+        image(getImage("cute/GrassBlock"), grassXs[i], height*0.85, 20, 20);
+        grassXs[i] -= 1;
+        if (grassXs[i] <= -20) {
+            grassXs[i] = width;
+        }
+    }
+    
+    for (var i = 0; i < sticks.length; i++) {
+       
+        sticks[i].draw();
+        beaver.checkForStickGrab(sticks[i]);
+        
+        if(sticks[10].x < 0){
+           sticks[i].x -=2;
+        } else if (sticks[15].x < 0) {
+            sticks[i].x -= 3;
+        } else {
+            sticks[i].x -= 1;
+        }
+    }
+    
+    textSize(18);
+    text("Score: " + beaver.sticks, 20, 30);
+    
+    if (beaver.sticks/sticks.length >= 0.95) {
+        textSize(36);
+        text("YOU WIN!!!!", 100, 200);
+    }
+    
+    if (keyIsPressed && keyCode === 0) {
+        beaver.hop();
+    } else {
+        beaver.fall();
+    }
+    beaver.draw();
+    }
+};
+
+
