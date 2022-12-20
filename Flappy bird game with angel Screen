@@ -1,0 +1,303 @@
+var scene = 0;
+var gameOver = false; 
+var score = 0;
+  
+  var drawFace = function(x,y,h)
+{
+    var p= 100/h;
+noStroke();
+fill(231, 198, 164); //skin tone
+ellipse(x+100/p,y+100/p,83/p,100/p); // head shape
+fill(244, 245, 182);
+arc(x+58/p,y+141/p,28/p,55/p,0,361); //left chisel
+arc(x+142/p,y+141/p,28/p,55/p,0,361); // right chisel
+fill(150, 75, 0);//eye color
+ellipse(x+82/p,y+89/p,12/p,13/p);//left eye
+ellipse(x+116/p,y+89/p,12/p,13/p);//right eye
+quad(x+42/p,y+114/p,x+51/p,y+63/p,x+90/p,y+50/p,x+70/p,y+99/p);// left hair
+quad(x+163/p,y+109/p,x+150/p,y+66/p,x+117/p,y+50/p,x+131/p,y+97/p); // right hair
+};
+
+var drawHat = function(x,y,h)
+{ 
+    var p= 100/h;
+    drawFace(x,y,h);
+    fill(0, 0, 0);// hat brim
+    arc(x+94/p,y+59/p,106/p,-30/p,-144,-11);// hat brim
+    fill(207, 185, 151);//hat color
+    quad(x+79/p, y+27/p, x+123/p, y+27/p, x+144/p, y+62/p, x+51/p, y+66/p);//hat
+    stroke(0, 0, 0);
+    fill(255, 0, 0);
+    ellipse(x+100/p,y+45/p,38/p,18/p);//circle in hat
+};
+
+var drawShirt= function(x,y,h)
+{
+    var p= 100/h;
+    drawHat(x,y,h);
+    noStroke();
+    fill(44, 23, 232);
+quad(x+25/p,y+130/p,x+106/p,y+155/p,x+94/p,y+201/p,x+27/p,y+202/p);//shirt
+quad(x+94/p,y+155/p,x+172/p,y+131/p,x+199/p,y+200/p,x+87/p,y+201/p);//shirt
+fill(255, 255, 255);// initals color
+textSize(55/p);
+text("A B", x+60/p,y+196/p);
+};
+
+var drawLowFace = function(x,y,h)
+ {
+     var p= 100/h;
+     drawShirt(x,y,h);
+fill(255, 255, 255);
+arc(x+103/p,y+125/p,30/p,13/p,-7,180);// teeth
+stroke(0, 0, 0);
+line(x+87/p,y+124/p,x+119/p,y+125/p);//upper lip
+fill(231, 198, 164);
+bezier(x+103/p,y+91/p,x+115/p,y+120/p,x+101/p,y+120/p,x+96/p,y+115/p);
+};
+
+   var Button = function(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.width = config.width || 150;
+    this.height = config.height || 50;
+    this.label = config.label || "Click";
+};
+
+Button.prototype.draw = function() {
+    fill(215, 159, 230);
+    rect(this.x, this.y, this.width, this.height, 12);
+    fill(0, 0, 0);
+    textSize(19);
+    
+    text(this.label, this.x+-53, this.y+this.height/4);
+};
+
+Button.prototype.isMouseInside = function() {
+    return mouseX > this.x &&
+           mouseX < (this.x + this.width) &&
+           mouseY > this.y &&
+           mouseY < (this.y + this.height);
+};
+
+
+var btn1 = new Button({
+    x: 100,
+    y: 250,
+    label: "Start Game!"
+});
+
+var angelButton = new Button({
+    x: 100,
+    y:321,
+  label:" "
+    
+});
+
+mouseClicked = function() {
+    if(scene ===0){
+        if(angelButton.isMouseInside()){
+            scene = 1;
+        }
+    }
+    if(scene ===1){
+    if (btn1.isMouseInside()) {
+        scene = 2;
+    }
+    }
+};
+
+//end of khan button class
+  
+
+var rocketMan = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.img = getImage("space/rocketship");
+    this.pipes = 0;
+};
+
+rocketMan.prototype.draw = function() {
+    fill(255, 0, 0);
+    this.y = constrain(this.y,0, height-40);
+    image(this.img, this.x, this.y, 60, 60);
+};
+
+rocketMan.prototype.hop = function() {
+    this.img = getImage("space/rocketship");
+    this.y -= 5;
+};
+
+rocketMan.prototype.fall = function() {
+    this.img = getImage("space/rocketship");
+    this.y += 5;
+};
+
+
+
+
+var Pipe = function(x, height, isTop) {
+    this.x = x;
+    this.height = height;
+    this.isTop = isTop;
+};
+
+Pipe.prototype.draw = function() {
+    fill(95, 217, 87);
+    rectMode(CENTER);
+    
+    if(this.isTop) {
+        rect(this.x, this.height-this.height, 30, this.height); 
+        rect(this.x,this.height/2,50,20);
+    }else {
+        rect(this.x, this.height+200, 30, this.height+100); 
+         rect(this.x,this.height/2+150,50,20);
+    }
+};
+
+var char = new rocketMan(200, 54);
+
+var pipes = [];
+for (var i = 0; i < 100; i++) { 
+    if(pipes[i] <=100){
+        this.sticks++;
+    }
+    var pipeHeight= random(80,445);
+    pipes.push(new Pipe(i * 150 + 300, pipeHeight, true));
+    pipes.push(new Pipe(i * 150 + 300, pipeHeight, false));
+}
+
+var dirtXs = [];
+for (var i = 0; i < 25; i++) { 
+    dirtXs.push(i*20);
+}
+
+rocketMan.prototype.checkForStickPass = function(pipe) {
+    if(pipe.x === 194){
+        this.pipes++;
+        score = this.pipes/2;
+    }
+};
+rocketMan.prototype.checkForStickGrab = function(pipe) {
+    if ((pipe.x >= this.x && pipe.x <= (this.x + 42))) {
+        
+        if(pipe.isTop && this.y > 0 && this.y < (pipe.height/2)-10) {
+                    
+            
+            
+            
+             
+             gameOver =true;
+        } else if (!pipe.isTop &&  this.y >pipe.height+100-(pipe.height/2)){
+           
+           
+            
+            gameOver =true;
+            
+        }
+
+    }
+    
+    
+};
+
+var angelScene = function(){
+    background(244, 245, 182);
+    drawLowFace(104,117,86);
+    fill(5, 4, 4);
+    textSize(12);
+   
+
+    text("I am Angel Bencosme.I am from Providence, RI. I am Dominican.",5,40);
+    text(" I went to Paul Cuffee Highschool and played soccer for most of my life.",5,80);
+    text(" I am a freshman with a computer science major.",5,120);
+    angelButton.draw();
+    text("Next Screen",110,354);
+};
+
+var startGameScene = function(){
+    background(244, 245, 182);
+    btn1.draw();
+  image(getImage("space/rocketship"),80,25,100,100);
+  
+  image(getImage("cute/WaterBlock"),-4,329,416,100);
+  for(var i = 0; i<=400; i+=20){
+image(getImage("cute/DirtBlock"),i,341,20,20);
+}
+ 
+  for (var i = 0; i < 3; i++) {
+       
+        pipes[i].draw();
+         }
+
+
+};
+
+draw = function() {
+    // static
+    
+    if(scene ===0){
+        angelScene();
+    }
+    if(scene === 1){
+        startGameScene();
+       
+    }
+   else if (gameOver === false && scene ===2){
+    background(244, 245, 182);
+    image(getImage("cute/WaterBlock"),-4,329,416,100);
+    
+    for (var i = 0; i < dirtXs.length; i++) {
+        image(getImage("cute/DirtBlock"), dirtXs[i], height*0.85, 20, 20);
+        dirtXs[i] -= 1;
+        if (dirtXs[i] <= -20) {
+            dirtXs[i] = width;
+        }
+    }
+    
+    for (var i = 0; i < pipes.length; i++) {
+       
+        pipes[i].draw();
+        char.checkForStickGrab(pipes[i]);
+        char.checkForStickPass(pipes[i]);
+       if(pipes[10].x < 0){ //speed after 10?
+           pipes[i].x -=2;
+        } else if (pipes[15].x < 0) { //speed after 15?
+           pipes[i].x -= 3;
+        }
+            else if (pipes[22].x <0){
+                pipes[i].x -= 5;
+            }
+         else {
+            pipes[i].x -= 1; //speed before 10
+        }
+    }
+    
+    
+    textSize(18);
+    fill(0, 0, 0);
+    text("Score: " + score, 20, 30);
+    
+    if (char.pipes/pipes.length >= 0.95) {
+        textSize(36);
+        text("YOU WIN!!!!", 100, 200);
+    }
+    
+    if (keyIsPressed && keyCode === 0) {
+        char.hop();
+    } else {
+        char.fall();
+    }
+    char.draw();
+    }
+    if(gameOver===true){
+        
+        fill(228, 245, 115);
+        rectMode(CORNER);
+        rect(74,145,240,130,10);
+       fill(255, 0, 0);
+   text("Click Restart to try again",102,231);
+   fill(0, 0, 0);
+   text("You scored: "+ score,100,161);
+    }
+};
