@@ -1,0 +1,216 @@
+
+var Gameover = 0; 
+var temp = 0;
+var score = 0;
+var currentScene = 1;
+
+var Button = function(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.width = config.width || 150;
+    this.height = config.height || 50;
+    this.label = config.label || "Click";
+    this.onClick = config.onClick || function() {};
+};
+
+Button.prototype.draw = function() {
+    fill(0, 234, 255);
+    rect(this.x, this.y, this.width, this.height, 5);
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x+10, this.y+this.height/4);
+};
+
+Button.prototype.isMouseInside = function() {
+    return mouseX > this.x &&
+           mouseX < (this.x + this.width) &&
+           mouseY > this.y &&
+           mouseY < (this.y + this.height);
+};
+
+Button.prototype.handleMouseClick = function() {
+    if (this.isMouseInside()) {
+        this.onClick();
+    }
+};
+
+var startButton = new Button({
+    x: 100,
+    y: 267,
+    label: "Start!",
+    onClick: function() {
+       currentScene = 2;
+    }
+});
+startButton.draw();
+
+
+
+mouseClicked = function() {
+    if(currentScene === 0){
+    startButton.handleMouseClick();
+    }
+};
+
+
+var splash = function() {
+   background(229, 235, 185);
+   fill(52, 47, 189);
+   textSize(39);
+   text("Flappy Bird\nRemastered", 84,36);
+   textSize(19);
+   text("by Angel and Alex", 114,190);
+   textSize(15);
+   startButton.draw();
+   
+};
+
+
+
+var Beaver = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.img = getImage("space/rocketship");
+    this.sticks = 0;
+};
+
+Beaver.prototype.draw = function() {
+    fill(255, 0, 0);
+    this.y = constrain(this.y,0, height-40);
+    image(this.img, this.x, this.y, 60, 60);
+};
+
+Beaver.prototype.hop = function() {
+    this.img = getImage("space/rocketship");
+    this.y -= 5;
+};
+
+Beaver.prototype.fall = function() {
+    this.img = getImage("space/rocketship");
+    this.y += 5;
+};
+
+
+
+
+var Stick = function(x, height, isTop) {
+    this.x = x;
+    this.height = height;
+    this.isTop = isTop;
+};
+
+Stick.prototype.draw = function() {
+    fill(89, 71, 0);
+    rectMode(CENTER);
+    
+    if(this.isTop) {
+        rect(this.x, this.height-this.height, 5, this.height); 
+    }else {
+        rect(this.x, this.height+200, 5, this.height+100); 
+    }
+};
+
+var beaver = new Beaver(200, 54);
+
+var sticks = [];
+for (var i = 0; i < 40; i++) { 
+    if(sticks[i] <=40){
+        this.sticks++;
+    }
+    var pipeHeight= random(80,445);
+    temp = pipeHeight;
+    sticks.push(new Stick(i * 100 + 300, pipeHeight, true));
+    sticks.push(new Stick(i * 100 + 300, pipeHeight, false));
+}
+
+var grassXs = [];
+for (var i = 0; i < 25; i++) { 
+    grassXs.push(i*20);
+}
+
+Beaver.prototype.checkForStickPass = function(stick) {
+    if(stick.x === 194){
+        this.sticks++;
+        score = this.sticks/2;
+    }
+};
+Beaver.prototype.checkForStickGrab = function(stick) {
+    if ((stick.x >= this.x && stick.x <= (this.x + 42))) {
+        
+        if(stick.isTop && this.y > 0 && this.y < stick.height/2) {
+                    
+            
+            
+            
+             Gameover = 1;
+        } else if (!stick.isTop &&  this.y >stick.height+100-(stick.height/2)){
+           
+           
+            Gameover = 2;
+            
+            
+        }
+
+    }
+    
+    
+};
+
+draw = function() {
+    // static
+    if (Gameover === 0){
+    background(227, 254, 255);
+    fill(130, 79, 43);
+    rectMode(CORNER);
+    rect(0, height*0.90, width, height*0.10);
+    
+    for (var i = 0; i < grassXs.length; i++) {
+        image(getImage("cute/GrassBlock"), grassXs[i], height*0.85, 20, 20);
+        grassXs[i] -= 1;
+        if (grassXs[i] <= -20) {
+            grassXs[i] = width;
+        }
+    }
+    
+    for (var i = 0; i < sticks.length; i++) {
+       
+        sticks[i].draw();
+        beaver.checkForStickGrab(sticks[i]);
+        beaver.checkForStickPass(sticks[i]);
+       if(sticks[10].x < 0){ //speed after 10?
+           sticks[i].x -=2;
+        } else if (sticks[15].x < 0) { //speed after 15?
+            sticks[i].x -= 3;
+        } else {
+            sticks[i].x -= 1; //speed before 10
+        }
+    }
+    
+    
+    textSize(18);
+    text("Score: " + score, 20, 30);
+    
+    if (beaver.sticks/sticks.length >= 0.95) {
+        textSize(36);
+        text("YOU WIN!!!!", 100, 200);
+    }
+    
+    if (keyIsPressed && keyCode === 0) {
+        beaver.hop();
+    } else {
+        beaver.fall();
+    }
+    beaver.draw();
+    }
+    if(Gameover===1){
+        background(0, 0, 0);
+        fill(255, 255, 255);
+        text("Game Over",200,200);
+    }
+    if(Gameover===2){
+        background(0, 0, 0);
+        fill(255, 255, 255);
+        text("Game Over",159,200);
+    }
+};
